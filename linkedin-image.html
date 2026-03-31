@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1200" />
+  <title>Day 5 - Next.js | TechFromZero</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1200px;
+      height: 628px;
+      background: #0a0a0a;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      color: #f0f0f0;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left {
+      width: 55%;
+      height: 100%;
+      padding: 38px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #1e1e1e;
+      position: relative;
+    }
+
+    .left::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, #3b82f6 30%, #3b82f6 70%, transparent);
+      opacity: 0.5;
+    }
+
+    /* Beginner badge */
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .beginner-badge {
+      background: #3b82f620;
+      border: 1px solid #3b82f650;
+      color: #93c5fd;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .series-label {
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Main title block */
+    .title-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 0;
+    }
+
+    .day-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #3b82f6;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .day-number {
+      font-size: 88px;
+      font-weight: 900;
+      color: #3b82f6;
+      line-height: 1;
+      letter-spacing: -3px;
+      text-shadow: 0 0 60px #3b82f640;
+    }
+
+    .tech-name {
+      font-size: 42px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+
+    .project-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: #9ca3af;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Tags row */
+    .tags-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-top: 2px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #60a5fa;
+      letter-spacing: 0.06em;
+    }
+
+    .tag-sep {
+      color: #374151;
+      font-size: 12px;
+    }
+
+    /* Bottom row */
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .type-badge {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 6px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .series-counter {
+      font-size: 12px;
+      color: #4b5563;
+      font-weight: 600;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right {
+      width: 45%;
+      height: 100%;
+      padding: 30px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #0d0d0d;
+    }
+
+    .panel-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #4b5563;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 8px;
+    }
+
+    /* Architecture diagram */
+    .arch-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
+    .arch-node {
+      font-size: 10px;
+      font-weight: 700;
+      background: #1a1a2e;
+      border: 1px solid #3b82f630;
+      color: #93c5fd;
+      padding: 3px 9px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .arch-node.highlight {
+      background: #1d3557;
+      border-color: #3b82f6;
+      color: #60a5fa;
+    }
+
+    .arch-arrow {
+      color: #374151;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .arch-label {
+      font-size: 9px;
+      color: #4b5563;
+      margin-top: 2px;
+      padding-left: 4px;
+    }
+
+    /* Steps list */
+    .steps-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .step {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 3px 0;
+    }
+
+    .step-num {
+      font-size: 9px;
+      font-weight: 800;
+      color: #3b82f6;
+      min-width: 16px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .step-line {
+      width: 1px;
+      height: 100%;
+      background: #1e1e1e;
+    }
+
+    .step-text {
+      font-size: 10.5px;
+      color: #9ca3af;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .step-text span {
+      color: #d1d5db;
+      font-weight: 600;
+    }
+
+    /* Bottom: GitHub + progress */
+    .bottom-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .github-url {
+      font-size: 10px;
+      color: #4b5563;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .github-url strong {
+      color: #60a5fa;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-label {
+      font-size: 9.5px;
+      color: #4b5563;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+
+    .progress-bar-wrap {
+      flex: 1;
+      height: 4px;
+      background: #1a1a1a;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 10%; /* 5 / 50 */
+      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+      border-radius: 2px;
+    }
+
+    .progress-pct {
+      font-size: 9.5px;
+      color: #3b82f6;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Subtle corner glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px;
+      left: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #3b82f610 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -100px;
+      right: -60px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #3b82f608 0%, transparent 70%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ LEFT PANEL ═══════════════ -->
+  <div class="left">
+
+    <!-- Top: badge + series label -->
+    <div class="badge-row">
+      <div class="beginner-badge">🎯 Beginner Guide</div>
+      <div class="series-label">TechFromZero Series</div>
+    </div>
+
+    <!-- Centre: day + tech + project -->
+    <div class="title-block">
+      <div class="day-label">Day 5 of 50</div>
+      <div class="day-number">5</div>
+      <div class="tech-name">Next.js</div>
+      <div class="project-name">DEV.to Blog Reader</div>
+      <div class="tags-row" style="margin-top:12px;">
+        <span class="tag">SSR</span>
+        <span class="tag-sep">·</span>
+        <span class="tag">SSG</span>
+        <span class="tag-sep">·</span>
+        <span class="tag">ISR</span>
+        <span class="tag-sep">·</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag-sep">·</span>
+        <span class="tag">Tailwind CSS</span>
+      </div>
+    </div>
+
+    <!-- Bottom: type badge + counter -->
+    <div class="bottom-row">
+      <div class="type-badge">Full-Stack App</div>
+      <div class="series-counter">Next.js 15 · Pages Router</div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ RIGHT PANEL ═══════════════ -->
+  <div class="right">
+
+    <!-- Architecture -->
+    <div class="arch-block">
+      <div class="panel-title">Architecture</div>
+      <div style="margin-top:8px;">
+        <div class="arch-flow">
+          <div class="arch-node highlight">SSG Home</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node">DEV.to API</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node highlight">ISR Cache</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node">SSR Article</div>
+        </div>
+        <div class="arch-label">Static generation with incremental revalidation + server-side detail pages</div>
+      </div>
+      <div style="margin-top:6px;">
+        <div class="arch-flow">
+          <div class="arch-node">Tag Page</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node highlight">ISR revalidate</div>
+          <div class="arch-arrow" style="opacity:0.4;">·</div>
+          <div class="arch-node">Author Page</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node highlight">ISR revalidate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step-by-step commits -->
+    <div class="steps-block">
+      <div class="panel-title">10 Commits · Step by Step</div>
+      <div style="margin-top:6px; display:flex; flex-direction:column; gap:3px;">
+
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-text"><span>Init</span> Next.js + TypeScript + Tailwind CSS</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-text"><span>Types</span> for DEV.to API responses</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-text"><span>API utility</span> with typed fetch helpers</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-text"><span>Layout</span> component — header + footer</div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-text"><span>ArticleCard</span> + TagBadge components</div>
+        </div>
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-text"><span>Home page</span> — SSG + client-side search</div>
+        </div>
+        <div class="step">
+          <div class="step-num">07</div>
+          <div class="step-text"><span>Article detail</span> page — SSR</div>
+        </div>
+        <div class="step">
+          <div class="step-num">08</div>
+          <div class="step-text"><span>Tag filter</span> page — SSG + ISR</div>
+        </div>
+        <div class="step">
+          <div class="step-num">09</div>
+          <div class="step-text"><span>Author profile</span> page — SSG + ISR</div>
+        </div>
+        <div class="step">
+          <div class="step-num">10</div>
+          <div class="step-text"><span>README</span> + quickstart + tag_list fix</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- GitHub + progress bar -->
+    <div class="bottom-block">
+      <div class="github-url">github.com / <strong>dev48v / nextjs-from-zero</strong></div>
+      <div class="progress-row">
+        <div class="progress-label">Day 5 / 50</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill"></div>
+        </div>
+        <div class="progress-pct">10%</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
