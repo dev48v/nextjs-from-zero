@@ -2,7 +2,6 @@
 // WHY: Cards are used on Home, Tag pages, and Author pages — one component
 //      ensures visual consistency and makes style tweaks a single-file change.
 
-import Image from "next/image";
 import Link from "next/link";
 import type { Article } from "@/types/article";
 import TagBadge from "@/components/TagBadge";
@@ -16,14 +15,13 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     <article className="flex flex-col rounded-xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-emerald-800 transition-colors">
       {/* Cover image — gracefully skipped when null */}
       {article.cover_image ? (
-        <div className="relative h-48 w-full">
-          {/* WHY: next/image handles lazy loading + WebP conversion automatically */}
-          <Image
+        <div className="relative h-48 w-full overflow-hidden">
+          {/* WHY: plain <img> avoids next/image remotePatterns whitelist issues —
+                   DEV.to serves cover images from many unpredictable CDN hostnames */}
+          <img
             src={article.cover_image}
             alt={article.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="w-full h-full object-cover"
           />
         </div>
       ) : (

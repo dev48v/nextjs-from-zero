@@ -6,7 +6,6 @@
 
 import type { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import Layout from "@/components/Layout";
 import TagBadge from "@/components/TagBadge";
 import type { Article } from "@/types/article";
@@ -29,17 +28,14 @@ const ArticlePage: NextPage<ArticlePageProps> = ({ article }) => {
 
       <article className="mx-auto max-w-3xl">
         {/* Cover image — nullable guard */}
+        {/* WHY: plain <img> avoids next/image remotePatterns whitelist issues —
+                 DEV.to cover images come from many unpredictable CDN hostnames */}
         {article.cover_image && (
-          <div className="relative mb-8 h-64 w-full overflow-hidden rounded-xl">
-            <Image
+          <div className="mb-8 h-64 w-full overflow-hidden rounded-xl">
+            <img
               src={article.cover_image}
               alt={article.title}
-              fill
-              className="object-cover"
-              priority
-              // WHY: priority=true tells next/image to preload this image —
-              //      it's the LCP element on the article page
-              sizes="(max-width: 768px) 100vw, 768px"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
