@@ -34,8 +34,9 @@ export interface Article {
   public_reactions_count: number;
   // WHY: reading_time_minutes is an int provided by DEV.to so we don't have to compute it
   reading_time_minutes: number;
-  // tag_list is a comma-separated string; tags is a string array parsed from it
-  tag_list: string;
+  // WHY: DEV.to is inconsistent — tag_list can arrive as a comma-separated string
+  //      or as a pre-split array depending on the endpoint. Accept both here.
+  tag_list: string | string[];
   tags: string[];
   user: ArticleUser;
   // WHY: body_html is only present on the single-article endpoint, mark optional

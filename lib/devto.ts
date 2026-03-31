@@ -25,12 +25,31 @@ async function devtoFetch<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// WHY: DEV.to API is inconsistent — tag_list can be a comma-separated string
+//      ("javascript,react,webdev") or a pre-split array depending on the endpoint.
+//      Normalise to string[] here so every consumer always gets a clean array.
+function normaliseArticle(raw: Article): Article {
+  let tags: string[] = [];
+  const tl = raw.tag_list as unknown;
+  if (Array.isArray(tl)) {
+    tags = tl as string[];
+  } else if (typeof tl === "string" && tl) {
+    tags = tl.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  return { ...raw, tags };
+}
+
+function normaliseMany(raw: Article[]): Article[] {
+  return raw.map(normaliseArticle);
+}
+
 /**
  * Fetch the latest articles.
  * WHY: per_page=20 gives a reasonable first page without hammering the free API.
  */
 export async function fetchArticles(perPage = 20): Promise<Article[]> {
-  return devtoFetch<Article[]>(`/articles?per_page=${perPage}`);
+  const raw = await devtoFetch<Article[]>(`/articles?per_page=${perPage}`);
+  return normaliseMany(raw);
 }
 
 /**
@@ -38,7 +57,8 @@ export async function fetchArticles(perPage = 20): Promise<Article[]> {
  * WHY: SSR pages need the full article including body_html which is only on /articles/{id}.
  */
 export async function fetchArticleById(id: number | string): Promise<Article> {
-  return devtoFetch<Article>(`/articles/${id}`);
+  const raw = await devtoFetch<Article>(`/articles/${id}`);
+  return normaliseArticle(raw);
 }
 
 /**
@@ -49,9 +69,10 @@ export async function fetchByTag(
   tag: string,
   perPage = 20
 ): Promise<Article[]> {
-  return devtoFetch<Article[]>(
+  const raw = await devtoFetch<Article[]>(
     `/articles?tag=${encodeURIComponent(tag)}&per_page=${perPage}`
   );
+  return normaliseMany(raw);
 }
 
 /**
@@ -63,7 +84,8 @@ export async function fetchByAuthor(
   username: string,
   perPage = 20
 ): Promise<Article[]> {
-  return devtoFetch<Article[]>(
+  const raw = await devtoFetch<Article[]>(
     `/articles?username=${encodeURIComponent(username)}&per_page=${perPage}`
   );
+  return normaliseMany(raw);
 }
