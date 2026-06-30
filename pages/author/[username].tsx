@@ -131,12 +131,13 @@ export const getStaticProps: GetStaticProps<AuthorPageProps> = async (
     const articles = await fetchByAuthor(username, 20);
     return {
       props: { username, articles },
-      // WHY: Author feeds change infrequently — 10 minutes revalidation is fine
-      revalidate: 600,
+      // WHY: Author feeds change infrequently — 1-day revalidation keeps the CDN
+      //      cache warm (no per-visit function invocation / ISR write).
+      revalidate: 86400,
     };
   } catch (err) {
     console.error(`getStaticProps /author/${username} failed:`, err);
-    return { props: { username, articles: [] }, revalidate: 600 };
+    return { props: { username, articles: [] }, revalidate: 3600 };
   }
 };
 

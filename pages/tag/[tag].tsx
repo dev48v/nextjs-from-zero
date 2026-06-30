@@ -93,12 +93,13 @@ export const getStaticProps: GetStaticProps<TagPageProps> = async (context) => {
     const articles = await fetchByTag(tag, 20);
     return {
       props: { tag, articles },
-      // WHY: Revalidate every 5 minutes — tag feeds change less often than the homepage
-      revalidate: 300,
+      // WHY: Tag feeds change slowly — 1-day revalidation keeps the CDN cache warm
+      //      (no per-visit function invocation / ISR write).
+      revalidate: 86400,
     };
   } catch (err) {
     console.error(`getStaticProps /tag/${tag} failed:`, err);
-    return { props: { tag, articles: [] }, revalidate: 300 };
+    return { props: { tag, articles: [] }, revalidate: 3600 };
   }
 };
 

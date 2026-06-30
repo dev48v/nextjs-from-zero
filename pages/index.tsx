@@ -1,7 +1,8 @@
 // STEP 6: Home page — SSG (getStaticProps + revalidate) with client-side search
 // WHY: SSG gives us a pre-rendered HTML page on the first visit (fast, SEO-friendly).
-//      revalidate: 60 means Next.js regenerates the page in the background at most
-//      once per minute — we get fresh content without hammering the API on every request.
+//      revalidate: 86400 means Next.js regenerates the page in the background at most
+//      once a day — fresh content without re-invoking the function on every request
+//      (a short window would keep the CDN cache cold = a function hit + ISR write per visit).
 
 import { useState, useMemo } from "react";
 import type { GetStaticProps, NextPage } from "next";
@@ -40,7 +41,7 @@ const Home: NextPage<HomeProps> = ({ articles }) => {
           <span className="text-emerald-400">DEV.to</span>
         </h1>
         <p className="mb-6 text-gray-400 text-sm">
-          {articles.length} articles fetched &bull; statically generated, revalidates every 60 s
+          {articles.length} articles fetched &bull; statically generated, revalidates daily
         </p>
 
         {/* WHY: Controlled input keeps the query in sync with React state */}
@@ -96,13 +97,16 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
     const articles = await fetchArticles(20);
     return {
       props: { articles },
-      // WHY: ISR — regenerate at most every 60 seconds so content stays reasonably fresh
-      revalidate: 60,
+      // WHY: ISR — regenerate at most once a day. The DEV.to feed barely changes
+      //      intraday, so a 1-day window keeps the CDN cache warm (near-zero
+      //      function invocations / ISR writes) while staying fresh enough.
+      revalidate: 86400,
     };
   } catch (err) {
     console.error("getStaticProps /index failed:", err);
-    // Return empty list rather than throwing, so the page still builds
-    return { props: { articles: [] }, revalidate: 60 };
+    // Return empty list rather than throwing, so the page still builds.
+    // Short retry window so an API blip self-heals within the hour.
+    return { props: { articles: [] }, revalidate: 3600 };
   }
 };
 
