@@ -1,0 +1,9 @@
+# dev48v nextjs-from-zero — demo app, not for SEO.
+# Block crawlers from fuzzing the unbounded dynamic routes (thousands of distinct
+# article/tag/author URLs) — those drive ISR writes / SSR invocations / edge requests
+# on Vercel's free tier for zero benefit. Home stays crawlable.
+User-agent: *
+Disallow: /articles/
+Disallow: /tag/
+Disallow: /author/
+Crawl-delay: 10
